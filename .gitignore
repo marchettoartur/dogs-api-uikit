@@ -1,0 +1,60 @@
+
+# Lofti
+
+## Pods
+Podfile.lock
+Pods/*
+
+
+## App Code
+.idea/
+
+
+## Mac OS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.icloud
+
+
+## Swift Package Manager
+Packages/
+Package.pins
+Package.resolved
+*/Package.resolved
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+
+## Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+
+## Carthage
+Carthage/Build/
+
+
+## Accio dependency management
+Dependencies/
+.accio/
+
+
+## Xcode
+.build/
+build/
+xcuserdata
+xcuserdata/
+contents.xcworkspacedata
+DerivedData
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+
+
+## Code Injection
+iOSInjectionProject/
