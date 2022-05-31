@@ -6,31 +6,75 @@
 //
 
 import XCTest
+import Combine
+import Foundation
 @testable import DogsApp
 
 class DogsAppTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    let dogsService = DogsService(apiSession: APISession())
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    func testBreedsDataModel() throws {
+        
+        let message: [String: [String]] = [
+            "appenzeller": [],
+            "australian": ["shepherd"]
+        ]
+        
+        let breedsResponse = BreedsResponse(message: message, status: "success")
+        
+        let breeds = Breeds(from: breedsResponse)
+        
+        XCTAssert(breeds.breeds.contains("Appenzeller"))
+        XCTAssert(breeds.breeds.contains("Australian shepherd"))
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    func testFetchAllBreeds() throws {
+        
+        dogsService
+            .fetchAllBreeds()
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { _ in},
+                receiveValue: { breedsResponse in
+                    
+                    guard breedsResponse.status == "success"
+                    else {
+                        XCTAssert(false)
+                        return
+                    }
+                    
+                    let breeds = breedsResponse.breeds
+                    
+                    XCTAssert(breeds.contains("Australian shepard"))
+                    XCTAssert(breeds.contains("Appenzeller"))
+                }
+            )
+            .store(in: &self.cancellables)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func testFetchRandomImagesForBreed() {
+        
+        dogsService
+            .fetchRandomImagesForBreed(name: "akita", count: 10)
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { _ in},
+                receiveValue: { imagesResponse in
+                    
+                    guard imagesResponse.status == "success"
+                    else {
+                        XCTAssert(false)
+                        return
+                    }
+                    
+                    let images = imagesResponse.images
+                    
+                    XCTAssert(images.count == 10)
+                }
+            )
+            .store(in: &self.cancellables)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }
